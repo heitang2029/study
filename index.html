@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线编程学习平台 - 菜鸟教程</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* 顶部导航栏 */
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 24px;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-links a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            transition: color 0.3s;
+        }
+
+        .nav-links a:hover {
+            color: #667eea;
+        }
+
+        /* 主要内容区域 */
+        .main-container {
+            flex: 1;
+            padding: 20px;
+            max-width: 1400px;
+            margin: 0 auto;
+            width: 100%;
+        }
+
+        /* iframe容器 */
+        .iframe-wrapper {
+            background: white;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+            height: calc(100vh - 140px);
+            position: relative;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* 加载动画 */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+
+        .spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #667eea;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* 底部信息 */
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            text-align: center;
+            color: #666;
+            font-size: 14px;
+        }
+
+        /* 广告屏蔽样式 - CSS层面隐藏广告元素 */
+        .ad-blocker-styles {
+            display: none !important;
+        }
+
+        /* 常见广告类名和ID */
+        [class*="ad"],
+        [class*="Ad"],
+        [class*="AD"],
+        [id*="ad"],
+        [id*="Ad"],
+        [id*="AD"],
+        [class*="google"],
+        [class*="Google"],
+        [class*="ads"],
+        [class*="Ads"],
+        [class*="ADS"],
+        [class*="banner"],
+        [class*="Banner"],
+        [class*="sponsor"],
+        [class*="Sponsor"] {
+            display: none !important;
+            visibility: hidden !important;
+            height: 0 !important;
+            overflow: hidden !important;
+        }
+    </style>
+</head>
+<body>
+    <!-- 顶部导航 -->
+    <div class="header">
+        <div class="logo">📚 编程学习平台</div>
+        <div class="nav-links">
+            <a href="#" onclick="loadTutorial('https://www.runoob.com/')">首页</a>
+            <a href="#" onclick="loadTutorial('https://www.runoob.com/python3/')">Python</a>
+            <a href="#" onclick="loadTutorial('https://www.runoob.com/js/')">JavaScript</a>
+            <a href="#" onclick="loadTutorial('https://www.runoob.com/html/')">HTML</a>
+            <a href="#" onclick="loadTutorial('https://www.runoob.com/css/')">CSS</a>
+        </div>
+    </div>
+
+    <!-- 主要内容 -->
+    <div class="main-container">
+        <div class="iframe-wrapper">
+            <div class="loading" id="loading">
+                <div class="spinner"></div>
+                <p>正在加载教程内容...</p>
+            </div>
+            <iframe
+                id="tutorialFrame"
+                src="https://www.runoob.com/"
+                sandbox="allow-same-origin allow-scripts allow-popups allow-forms"
+                onload="hideLoading()"
+                onerror="showError()">
+            </iframe>
+        </div>
+    </div>
+
+    <!-- 底部信息 -->
+    <div class="footer">
+        <p>本页面仅供学习使用 | 内容来源于菜鸟教程 (runoob.com)</p>
+    </div>
+
+    <script>
+        // 隐藏加载动画
+        function hideLoading() {
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // 显示错误信息
+        function showError() {
+            const loading = document.getElementById('loading');
+            loading.innerHTML = '<p style="color: red;">加载失败，请检查网络连接</p>';
+        }
+
+        // 加载指定教程
+        function loadTutorial(url) {
+            const frame = document.getElementById('tutorialFrame');
+            const loading = document.getElementById('loading');
+            loading.style.display = 'block';
+            loading.innerHTML = '<div class="spinner"></div><p>正在加载教程内容...</p>';
+            frame.src = url;
+        }
+
+        // 广告屏蔽脚本
+        function blockAds() {
+            try {
+                const iframe = document.getElementById('tutorialFrame');
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+
+                // 等待iframe内容加载完成
+                setTimeout(() => {
+                    try {
+                        // 查找并移除广告元素
+                        const adSelectors = [
+                            '[class*="ad"]',
+                            '[class*="Ad"]',
+                            '[class*="AD"]',
+                            '[id*="ad"]',
+                            '[id*="Ad"]',
+                            '[id*="AD"]',
+                            '[class*="google"]',
+                            '[class*="Google"]',
+                            '[class*="ads"]',
+                            '[class*="Ads"]',
+                            '[class*="ADS"]',
+                            '[class*="banner"]',
+                            '[class*="Banner"]',
+                            '[class*="sponsor"]',
+                            '[class*="Sponsor"]',
+                            '.advertisement',
+                            '#advertisement',
+                            '.google-ads',
+                            '#google-ads',
+                            '.ad-container',
+                            '#ad-container',
+                            '.adsbygoogle',
+                            'ins.adsbygoogle'
+                        ];
+
+                        adSelectors.forEach(selector => {
+                            try {
+                                const elements = iframeDoc.querySelectorAll(selector);
+                                elements.forEach(el => {
+                                    el.style.display = 'none';
+                                    el.style.visibility = 'hidden';
+                                    el.style.height = '0';
+                                    el.style.overflow = 'hidden';
+                                });
+                            } catch (e) {
+                                // 跨域限制可能导致无法访问
+                            }
+                        });
+
+                        // 拦截广告请求
+                        const observer = new MutationObserver((mutations) => {
+                            mutations.forEach((mutation) => {
+                                mutation.addedNodes.forEach((node) => {
+                                    if (node.nodeType === Node.ELEMENT_NODE) {
+                                        const className = node.className || '';
+                                        const id = node.id || '';
+                                        if (className.toLowerCase().includes('ad') ||
+                                            id.toLowerCase().includes('ad') ||
+                                            className.toLowerCase().includes('google') ||
+                                            className.toLowerCase().includes('ads')) {
+                                            node.style.display = 'none';
+                                        }
+                                    }
+                                });
+                            });
+                        });
+
+                        observer.observe(iframeDoc.body, {
+                            childList: true,
+                            subtree: true
+                        });
+
+                    } catch (e) {
+                        console.log('广告屏蔽:', e.message);
+                    }
+                }, 1000);
+
+            } catch (e) {
+                console.log('跨域限制，使用CSS屏蔽');
+            }
+        }
+
+        // 监听iframe加载完成
+        document.getElementById('tutorialFrame').addEventListener('load', () => {
+            hideLoading();
+            blockAds();
+        });
+
+        // 注入CSS到iframe（如果可能）
+        function injectAdBlockCSS() {
+            const iframe = document.getElementById('tutorialFrame');
+            try {
+                const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
+                const style = iframeDoc.createElement('style');
+                style.textContent = `
+                    [class*="ad"],
+                    [class*="Ad"],
+                    [class*="AD"],
+                    [id*="ad"],
+                    [id*="Ad"],
+                    [id*="AD"],
+                    [class*="google"],
+                    [class*="Google"],
+                    [class*="ads"],
+                    [class*="Ads"],
+                    [class*="ADS"],
+                    [class*="banner"],
+                    [class*="Banner"],
+                    [class*="sponsor"],
+                    [class*="Sponsor"] {
+                        display: none !important;
+                        visibility: hidden !important;
+                        height: 0 !important;
+                        overflow: hidden !important;
+                    }
+                `;
+                iframeDoc.head.appendChild(style);
+            } catch (e) {
+                console.log('无法注入CSS:', e.message);
+            }
+        }
+
+        // 页面加载完成后执行
+        window.addEventListener('load', () => {
+            setTimeout(blockAds, 2000);
+        });
+    </script>
+</body>
+</html>
